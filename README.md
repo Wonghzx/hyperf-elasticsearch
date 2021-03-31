@@ -18,7 +18,7 @@ composer require hzx/elasticsearch
 ### 2、发布配置
 
 ```php
-php bin/hyperf.php elasticsearch:publish --config
+php bin/hyperf.php vendor:publish hzx/elasticsearch
 ```
 
 
