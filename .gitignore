@@ -1,0 +1,6 @@
+/vendor/
+composer.lock
+*.cache
+*.log
+.idea
+.github/workflows/release.yml
