@@ -4,3 +4,4 @@ composer.lock
 *.log
 .idea
 .github/workflows/release.yml
+.DS_Store
