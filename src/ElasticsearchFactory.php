@@ -4,56 +4,56 @@ declare(strict_types=1);
 
 namespace Hzx\Elasticsearch;
 
-use Elasticsearch\Client;
-use Hyperf\Config\Annotation\Value;
-use Psr\Log\LoggerInterface;
-use Hyperf\Elasticsearch\ClientBuilderFactory;
+use Elasticsearch\ClientBuilder;
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Guzzle\RingPHP\CoroutineHandler;
+use Hyperf\Guzzle\RingPHP\PoolHandler;
+use Hyperf\Logger\LoggerFactory;
+use Psr\Container\ContainerInterface;
+use Hyperf\Contract\ConfigInterface;
+use Swoole\Coroutine;
+use Elasticsearch\Client;
 
 class ElasticsearchFactory
 {
 
     /**
-     * @Value("elasticsearch.hosts")
-     * @var string
+     * @Inject()
+     * @var ConfigInterface
      */
-    protected $hosts;
+    private $configInterface;
 
     /**
      * @Inject()
-     * @var ClientBuilderFactory
+     * @var ContainerInterface
      */
-    private $ClientBuilderFactory;
+    private $containerInterface;
 
     /**
-     * @param array $config
-     * @param LoggerInterface|null $logger
-     *
-     * @return Builder
-     */
-    public function builder(array $config = []): Builder
-    {
-        return new Builder(
-            new Query(new Grammar(), $this->clientBuilder($config))
-        );
-    }
-
-    /**
-     * @param array $config
-     * @param LoggerInterface|null $logger
-     *
      * @return Client
      */
-    protected function clientBuilder(array $config, ?LoggerInterface $logger = null): Client
+    public function builder(): Builder
     {
+        $config = $this->configInterface->get('elasticsearch');
 
-        $clientBuilder = $this->ClientBuilderFactory->create();
-        if (!empty($config)) {
-            $clientBuilder->setHosts($config['hosts']);
-        } else {
-            $clientBuilder->setHosts([$this->hosts]);
+        $clientConfig = $config['client'];
+        $loggerConfig = $config['logger'];
+
+        if (!isset($clientConfig['handler']) and Coroutine::getCid() > 0) {
+            $handler = $config['pool']['enabled']
+                ? make(PoolHandler::class, [
+                    'option' => $config['pool'],
+                ])
+                : make(CoroutineHandler::class);
+            $clientConfig['handler'] = $handler;
+        }
+        if (!isset($clientConfig['logger']) and $loggerConfig['enabled']) {
+            $logger = $this->containerInterface->get(LoggerFactory::class)->get($loggerConfig['name'], $loggerConfig['group']);
+            $clientConfig['logger'] = $logger;
         }
 
-        return $clientBuilder->build();
+        return new Builder(
+            new Query(new Grammar(), ClientBuilder::fromConfig($clientConfig))
+        );
     }
 }

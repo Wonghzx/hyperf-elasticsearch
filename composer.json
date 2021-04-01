@@ -29,7 +29,8 @@
     "hyperf/config": "^2.1",
     "hyperf/di": "2.1.*",
     "hyperf/elasticsearch": "^2.1",
-    "hyperf/framework": "2.1.*"
+    "hyperf/framework": "2.1.*",
+    "hyperf/logger": "2.1.*"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.14",
