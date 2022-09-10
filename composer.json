@@ -26,11 +26,11 @@
   },
   "require": {
     "php": ">=7.3",
-    "hyperf/config": "^2.1",
-    "hyperf/di": "2.1.*",
-    "hyperf/elasticsearch": "^2.1",
-    "hyperf/framework": "2.1.*",
-    "hyperf/logger": "2.1.*"
+    "hyperf/config": "v2.2.*",
+    "hyperf/di": "v2.2.*",
+    "hyperf/elasticsearch": "v2.2.*",
+    "hyperf/framework": "v2.2.*",
+    "hyperf/logger": "v2.2.*"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.14",
